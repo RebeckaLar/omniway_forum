@@ -4,7 +4,7 @@ export const dummyThreads: (Thread | QNAThread)[] = [
 	{
 		id: 1,
 		title: "Testartråden nummer 1",
-		category: "THREAD",
+		category: "Diskussion",
 		creationDate: "2025-09-01",
 		description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis facilis iste aliquam earum itaque rerum veniam eligendi minus dignissimos vitae quidem ex, expedita deserunt obcaecati vero fugit pariatur ipsa est!",
 		creator: dummyUsers[0]
