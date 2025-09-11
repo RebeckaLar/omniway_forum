@@ -1,20 +1,14 @@
 export const dummyUsers: User[] = [
     {
-        id: 1,
         userName: "Nisse",
-        password: "Hej123",
-        isModerator: true,
+        password: "Hej123"
     },
-    {
-        id: 2,
+     {
         userName: "Bosse",
-        password: "Hejdå123",
-        isModerator: false,
+        password: "Hejdå123"
     },
-    {
-        id: 3,
+     {
         userName: "Pelle",
-        password: "123Hej",
-        isModerator: false,
+        password: "123Hej"
     },
 ]
