@@ -7,8 +7,6 @@ type RegisterFormProps = {
 }
 
 function RegisterForm({ onSuccess }: RegisterFormProps) {
-
-  // react-hook-form setup for managing form state and validation
   const {
     register,
     handleSubmit,
@@ -21,7 +19,6 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [formError, setFormError] = useState<string>("")
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
-  // Effect to reset form and trigger onSuccess after submission
   useEffect(() => {
     if (isSubmitted == true) {
       reset({ userName: "", password: "" })
@@ -31,17 +28,8 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
     setFormError("")
   }, [isSubmitted, reset])
 
-
-  // Function called when form is submitted
   const onSubmit: SubmitHandler<User> = (data: User) => {
-    const _user: User = {
-      id: Date.now(),
-      userName: data.userName.trim(),
-      password: data.password.trim(),
-      isModerator: false,
-    }
-
-    // Check if the username is already taken
+    const _user: User = { userName: data.userName.trim(), password: data.password.trim() }
     const existingUser = users.find((u) => u.userName == _user.userName)
 
     if (!existingUser) {
@@ -60,26 +48,22 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
     <div className="w-full max-w-xs">
       <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit(onSubmit)}>
 
-        {/* Username input */}
         <div className="mb-4">
           <label className="block mb-2" >Användarnamn: </label>
           <input className='border' {...register("userName", { required: true })} />
           {errors.userName && errors.userName.type === "required" && <p className="text-red-500 text-xs italic mt-1">Vänligen ange ett användarnamn</p>}
         </div>
 
-        {/* Password input */}
         <div className="mb-6">
           <label className="block mb-2">Lösenord: </label>
           <input type='password' className='border' id='password' {...register("password", { required: true })} />
           {errors.password && errors.password.type === "required" && <p className="text-red-500 text-xs italic mt-1">Vänligen ange ett lösenord</p>}
         </div>
 
-        {/* Form error message */}
         <div>
           {formError && <p className="text-red-500 text-sm italic mb-3">{formError}</p>}
         </div>
 
-        {/* Submit button */}
         <div>
           <input
             type="submit"
