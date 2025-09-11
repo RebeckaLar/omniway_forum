@@ -6,6 +6,7 @@ type ThreadFormProps = {
     onClose?: () => void;
 }
 
+// Define the type for form data, excluding fields that are automatically generated
 type ThreadFormData = Omit<Thread, 'id' | 'creator' | 'creationDate'>
 
 export default function ThreadForm({ onClose }: ThreadFormProps) {
@@ -14,6 +15,7 @@ export default function ThreadForm({ onClose }: ThreadFormProps) {
 
     const creationDate = new Date().toLocaleDateString("sv-SE");
 
+    // Initialize React Hook Form
     const {
         register,
         setValue,
@@ -21,37 +23,49 @@ export default function ThreadForm({ onClose }: ThreadFormProps) {
         formState: { errors },
     } = useForm<ThreadFormData>()
 
+    // Define the type for form data, excluding fields that are automatically generated
     const onSubmit: SubmitHandler<ThreadFormData> = (data) => {
 
         if (!currentUser) {
-            // seterrorMessage('Du måste vara inloggad för att skapa en tråd')
-
             return
         }
 
+        // If user is logged in, create a new thread object
         if (currentUser) {
-            if(data.category == "QNA") {
+            if (data.category == "QNA") {
+                // Create a QNA thread with specific QNA properties
                 const newQNAThread: QNAThread = {
-                    id: threads.length > 0 ? Math.max(...threads.map(t => t.id)) + 1 : 1,
+                    id: threads.length > 0 ? Math.max(...threads.map(t => t.id)) + 1 : 1, // Generate new ID
                     title: data.title,
                     category: data.category,
                     description: data.description,
                     creationDate: creationDate,
-                    creator: { userName: currentUser.userName, password: currentUser.password },
+                    creator: {
+                        id: currentUser.id,
+                        userName: currentUser.userName,
+                        password: currentUser.password,
+                        isModerator: currentUser.isModerator,
+                    },
                     commentsLocked: data.commentsLocked,
                     isAnswered: false,
                     commentAnswerId: 0
                 }
-                actions.createThread(newQNAThread);
+                actions.createThread(newQNAThread); // Save thread to global state + LocalStorage
                 onClose?.();
             } else {
+                // Create a regular thread
                 const newThread: Thread = {
                     id: threads.length > 0 ? Math.max(...threads.map(t => t.id)) + 1 : 1,
                     title: data.title,
                     category: data.category,
                     description: data.description,
                     creationDate: creationDate,
-                    creator: { userName: currentUser.userName, password: currentUser.password },
+                    creator: {
+                        id: currentUser.id,
+                        userName: currentUser.userName,
+                        password: currentUser.password,
+                        isModerator: currentUser.isModerator,
+                    },
                     commentsLocked: data.commentsLocked
                 }
                 actions.createThread(newThread);
@@ -64,13 +78,17 @@ export default function ThreadForm({ onClose }: ThreadFormProps) {
 
     return (
         <div className="w-full max-w-2xl mx-auto">
+            {/* Thread creation form */}
             <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-4">
+
+                    {/* Title field */}
                     <label className="block mb-2" >Titel: </label>
                     <input className='border' {...register("title", { required: true })} />
                     {errors.title && errors.title.type === "required" && <p className="text-red-600 text-sm italic mt-1">Vänligen ange en titel</p>}
                 </div>
 
+                {/* Category dropdown */}
                 <div className="mb-4">
                     <label className="block mb-2" >Kategori: </label>
                     <div className=''>
@@ -90,20 +108,22 @@ export default function ThreadForm({ onClose }: ThreadFormProps) {
                     </div>
                 </div>
 
+                {/* Category dropdown */}
                 <div>
                     <label>Beskrivning: </label>
                     <textarea className='border w-full p-2 rounded' id='description' {...register("description", { required: true })} />
                     {errors.description && errors.description.type === "required" && <p className="text-red-600 text-sm italic">Vänligen ange en beskrivning till tråden</p>}
                 </div>
 
+                {/* Comments locked checkbox */}
                 <div className='mb-3'>
                     <label className="inline-flex items-center">
                         <input type="checkbox" className="form-checkbox" {...register("commentsLocked")} />
                         <span className="ml-2">Låsa kommentarer?</span>
                     </label>
                 </div>
-                {/* {errorMessage && (<p className='text-red-600 text-sm mb-4'>{errorMessage}</p>)} */}
 
+                {/* Submit button */}
                 <button
                     type='submit'
                     className='bg-green-800 text-white p-3 rounded mt-5'

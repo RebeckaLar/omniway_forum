@@ -18,6 +18,7 @@ export default function ThreadList() {
   const [showLoginPopup, setShowLoginPopup] = useState<boolean>(false)
   const navigate = useNavigate()
 
+  // Function to handle the "Create Thread" button click
   const handleCreateThreadButton = () => {
     if (!currentUser) {
       setShowLoginPopup(true)
@@ -26,32 +27,37 @@ export default function ThreadList() {
     }
   }
 
+  // Function to close the login popup
   const closeLoginPopup = () => {
     setShowLoginPopup(false);
     navigate('/');
   };
 
+  // If a thread is selected, show the single thread view
   if (selectedThread) {
-
     return (
       <div className='container mx-auto px-4 pt-20 lg:max-w-6xl'>
         <button onClick={() => setselectedThread(null)} className='flex gap-2 items-center mb-3'>
           <FaArrowLeft />
           <p>Tillbaka till forum</p>
         </button>
+
+        {/* Display the selected thread */}
         <Thread thread={selectedThread} />
       </div>
     )
   }
 
+  // Main forum view when no thread is selected
   return (
     <div className='container mx-auto px-4 lg:max-w-6xl'>
       <h1 className='text-3xl text-center font-bold text-blue-950 mt-20'>Forum</h1>
-
+      {/* Button to create a new thread */}
       <div className='flex gap-2 items-center mb-4 text-2xl font-semibold cursor-pointer' onClick={handleCreateThreadButton}>
         <IoIosAddCircleOutline /><p>Skapa ny tråd</p>
       </div>
 
+      {/* Login popup shown if the user tries to create a thread while not logged in */}
       {showLoginPopup && (
         <div onClick={closeLoginPopup} className='fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex justify-center items-center'>
           <div className="bg-white text-black p-6 rounded shadow-lg text-center max-w-sm w-full">
@@ -66,14 +72,17 @@ export default function ThreadList() {
         </div>
       )}
 
+      {/* Modal for creating a new thread */}
       <Modal isOpen={isModalOpen} appElement={document.getElementById('root') as HTMLElement} onRequestClose={() => setIsModalOpen(false)}
         contentLabel='Skapa ny tråd'
         className='text-blue-950 rounded'
         overlayClassName='fixed inset-0 text-white flex justify-center items-center z-50'>
 
+        {/* Thread creation form */}
         <ThreadForm onClose={() => setIsModalOpen(false)} />
       </Modal>
 
+      {/* List of thread previews */}
       <div className="space-y-4">
         {
           threads.map((thread) => (

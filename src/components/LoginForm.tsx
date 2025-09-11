@@ -8,6 +8,7 @@ type LoginFormProps = {
 
 function LoginForm({ onSuccess }: LoginFormProps) {
 
+  // react-hook-form setup for managing form state and validation
   const {
     register,
     handleSubmit,
@@ -16,34 +17,35 @@ function LoginForm({ onSuccess }: LoginFormProps) {
   } = useForm<User>({ defaultValues: { userName: "", password: "" } })
 
   const { users, actions } = useUser()
-
   const [formError, setFormError] = useState<string>("")
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
+  // Reset form fields and errors after submission
   useEffect(() => {
     if (isSubmitted) {
       reset({ userName: "", password: "" })
     }
     setIsSubmitted(false)
     setFormError("")
-
   }, [isSubmitted, reset])
 
+  // Function called when form is submitted
   const onSubmit: SubmitHandler<User> = (data: User) => {
-    const _user: User = { userName: data.userName.trim(), password: data.password.trim() }
-    const existingUser = users.find((u) => u.userName == _user.userName)
+    // Check if a user exists with the entered username
+    const existingUser = users.find((u) => u.userName == data.userName.trim())
 
     if (!existingUser) {
       setFormError("Användaren kunde inte hittas")
+      return
+    }
+
+    // Check if password matches
+    if (existingUser.password == data.password.trim()) {
+      actions.setUser(existingUser)
+      setIsSubmitted(true)
+      onSuccess()
     } else {
-      if (existingUser.password == _user.password) {
-        actions.setUser(_user)
-        setIsSubmitted(true)
-        onSuccess()
-      } else {
-        setFormError("Fel lösenord")
-        return
-      }
+      setFormError("Fel lösenord")
     }
 
     return
@@ -53,22 +55,26 @@ function LoginForm({ onSuccess }: LoginFormProps) {
     <div className="w-full max-w-xs">
       <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit(onSubmit)}>
 
+        {/* Username input */}
         <div className="mb-4">
           <label className="block mb-2" >Användarnamn: </label>
           <input className='border' {...register("userName", { required: true })} />
           {errors.userName && errors.userName.type === "required" && <p className="text-red-500 text-xs italic mt-1">Vänligen ange ett användarnamn</p>}
         </div>
 
+        {/* Password input */}
         <div className="mb-6">
           <label className="block mb-2">Lösenord: </label>
           <input type='password' className='border' id='password' {...register("password", { required: true })} />
           {errors.password && errors.password.type === "required" && <p className="text-red-500 text-xs italic mt-1">Vänligen ange ett lösenord</p>}
         </div>
 
+        {/* Form error message */}
         <div>
           {formError && <p className="text-red-500 text-sm italic mb-3">{formError}</p>}
         </div>
 
+        {/* Submit button */}
         <div>
           <input
             type="submit"
